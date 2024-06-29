@@ -34,5 +34,6 @@ import http from "http";
         wsServer.handleUpgrade(request, socket, head, (ws) => wsServer.emit('connection', ws, request));
     });
 
+    screenServer.listen();
     httpServer.listen(8080, '127.0.0.1');
 })();

@@ -1,6 +1,6 @@
 import {CDPSession, MouseButton, Page} from "puppeteer";
 import {Protocol} from "devtools-protocol";
-import {randomUUID} from "crypto";
+import {v4 as uuidv4} from 'uuid';
 import {_keyDefinitions, KeyInput} from "./USKeyboardLayout.ts";
 import {FrameMessage} from "./FrameMessage.ts";
 import {EventMessage} from "./EventMessage.ts";
@@ -22,7 +22,7 @@ export class ScreencastSession {
     private listener?: (event: Protocol.Page.ScreencastFrameEvent) => void;
 
     constructor(page: Page, client?: CDPSession) {
-        this.sessId = randomUUID().toString();
+        this.sessId = uuidv4();
         this.page = page;
         this.client = client;
     }
@@ -41,13 +41,8 @@ export class ScreencastSession {
         } else if (message.type == "screencast.event.keyboard") {
             const e = message.data;
             const eventType = e.type.replace('key', '').toLowerCase();
-            console.log("EVENT:", e);
             if (eventType == "up") {
-                // if (this.charIsKey(e.key)) {
                 await this.page.keyboard.up(e.code as any);
-                // } else {
-                //     await this.page.keyboard.sendCharacter(e.key);
-                // }
             } else if (eventType == "down") {
                 if (this.charIsKey(e.key)) {
                     await this.page.keyboard.down(e.code as any);

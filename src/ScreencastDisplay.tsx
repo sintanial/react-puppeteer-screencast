@@ -1,15 +1,15 @@
 import React, {HTMLProps, useEffect, useRef} from "react";
-import {throttle} from "lodash";
 import {Frame, FrameMessage} from "./FrameMessage.ts";
 import {EventMessage, KeyboardEventMessage, MouseEventMessage} from "./EventMessage.ts";
+import {throttle} from "./throttle.ts";
 
 export function makeBase64ImageURIFromFrame(frame: Frame) {
     return `data:image/${frame.format};base64,${frame.data}`;
 }
 
-export function ScreencastView(props: {
+export function ScreencastDisplay(props: {
     frame: FrameMessage,
-    onEventMessage: (e: EventMessage) => void,
+    onEventMessage?: (e: EventMessage) => void,
 } & HTMLProps<HTMLCanvasElement>) {
     const {
         frame: frameMessage,
@@ -51,7 +51,7 @@ export function ScreencastView(props: {
 
 
     useEffect(() => {
-        if (!frameMessage) return;
+        if (!frameMessage || frameMessage.type !== "screencast.frame") return;
 
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -72,6 +72,7 @@ export function ScreencastView(props: {
 
 
     const handleMouseEvent = (event: React.MouseEvent) => {
+        if (!onEventMessage) return;
         if (!canvasRef.current) return;
         if (!isMouseInsiderRef.current) return;
 
@@ -79,13 +80,22 @@ export function ScreencastView(props: {
         event.stopPropagation();
         const rect = canvasRef.current.getBoundingClientRect();
 
+        const canvasWidth = canvasRef.current.clientWidth;
+        const canvasHeight = canvasRef.current.clientHeight;
+
+        // Calculate scaling factors
+        const frame = frameMessage.data;
+        const scaleX = frame.metadata.deviceWidth / canvasWidth;
+        const scaleY = frame.metadata.deviceHeight / canvasHeight;
+
+
         const mouseEvent: MouseEventMessage = {
             type: "screencast.event.mouse",
             sessId: frameMessage.sessId,
             data: {
                 type: event.type,
-                x: event.clientX - rect.x,
-                y: event.clientY - rect.y,
+                x: (event.clientX - rect.x) * scaleX,
+                y: (event.clientY - rect.y) * scaleY,
                 button: event.button,
                 altKey: event.altKey,
                 ctrlKey: event.ctrlKey,
@@ -98,6 +108,7 @@ export function ScreencastView(props: {
     };
 
     const handleKeyboardEvent = (event: KeyboardEvent) => {
+        if (!onEventMessage) return;
         if (!canvasRef.current) return;
         if (!isMouseInsiderRef.current) return;
 

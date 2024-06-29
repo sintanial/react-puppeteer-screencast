@@ -1,6 +1,6 @@
 import useWebSocket from "react-use-websocket";
 import {useEffect, useState} from "react";
-import {ScreencastView} from "./ScreencastView.tsx";
+import {ScreencastDisplay} from "./ScreencastDisplay.tsx";
 import {FrameMessage} from "./FrameMessage.ts";
 
 export function ScreencastClient(props: {
@@ -22,7 +22,8 @@ export function ScreencastClient(props: {
         return null;
     }
 
-    return <ScreencastView
+    return <ScreencastDisplay
+        style={{width: "100%"}}
         frame={lastFrame}
         onEventMessage={(event) => sendJsonMessage(event)}
     />

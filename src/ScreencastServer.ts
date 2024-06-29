@@ -11,18 +11,33 @@ export class ScreencastServer {
 
     constructor(wss: WebSocketServer) {
         this.wss = wss;
+    }
 
+    public listen() {
         const onMessage = async (data: RawData) => {
-            const message = JSON.parse(data.toString()) as EventMessage;
-            const sess = this.sessions.find(sess => sess.sessId == message.sessId);
-            if (!sess) return;
-
-            await sess.handleEventMessage(message);
+            try {
+                const message = JSON.parse(data.toString()) as EventMessage;
+                await this.handle(message);
+            } catch (e) {
+            }
         }
 
         this.wss.on('connection', (ws: WebSocket) => {
             ws.on('message', (data) => onMessage(data));
         });
+    }
+
+    public async handle(message: EventMessage) {
+        if (message && message.type?.indexOf("screencast.") === 0) {
+            const sess = this.sessions.find(sess => sess.sessId == message.sessId);
+            if (!sess) return;
+
+            try {
+                await sess.handleEventMessage(message);
+            } catch (e) {
+                console.error(e);
+            }
+        }
     }
 
     public async startTransmit(page: Page, cdp?: CDPSession) {
@@ -34,7 +49,6 @@ export class ScreencastServer {
             sessId: session.sessId,
         } as StateStartMessage)));
         await session.start((frame: FrameMessage) => {
-            console.log("FRAME:", frame);
             this.wss.clients.forEach(client => client.send(JSON.stringify(frame)));
         }, {
             format: 'jpeg',

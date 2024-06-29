@@ -42,3 +42,5 @@ export type KeyboardEventMessage = {
 }
 
 export type EventMessage = MouseEventMessage | KeyboardEventMessage;
+
+export type StateMessage = StateStartMessage | StateStopMessage;
