@@ -132,8 +132,6 @@ export function ScreencastDisplay(props: {
     };
 
     const handleScrollEvent = (event: WheelEvent) => {
-        console.log(event);
-
         if (!onEventMessage || !isMouseInsiderRef.current) return;
 
         event.preventDefault();
