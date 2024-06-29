@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import {ScreencastClient} from "./src";
 
 export function App() {
-    const [website, setWebsite] = useState<string | undefined>("https://google.com/");
+    const [website, setWebsite] = useState<string | undefined>("https://amazon.com/");
 
     const handleSubmit = async () => {
         await fetch(`http://localhost:8080/screencast/start?website=${website}`);

@@ -41,6 +41,17 @@ export type KeyboardEventMessage = {
     data: ScreencastKeyboardEvent
 }
 
-export type EventMessage = MouseEventMessage | KeyboardEventMessage;
+type ScreencastWheelEvent = {
+    deltaX: number,
+    deltaY: number,
+}
+
+export type WheelEventMessage = {
+    type: "screencast.event.wheel",
+    sessId: string,
+    data: ScreencastWheelEvent
+}
+
+export type EventMessage = MouseEventMessage | KeyboardEventMessage | WheelEventMessage;
 
 export type StateMessage = StateStartMessage | StateStopMessage;

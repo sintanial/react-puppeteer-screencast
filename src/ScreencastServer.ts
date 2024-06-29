@@ -1,10 +1,16 @@
 import {RawData, WebSocket, WebSocketServer} from "ws";
-import {CDPSession, Page} from "puppeteer";
+import {Page} from "puppeteer";
 import {ScreencastSession} from "./ScreencastSession.ts";
 import {FrameMessage} from "./FrameMessage.ts";
 import {EventMessage, StateStartMessage, StateStopMessage} from "./EventMessage.ts";
 
-export class ScreencastServer {
+export interface ScreencastTransmitter {
+    startTransmit(page: Page, sessId?: string): Promise<void>;
+
+    stopTransmit(page: Page, sessId?: string): Promise<void>;
+}
+
+export class ScreencastServer implements ScreencastTransmitter {
     private wss: WebSocketServer;
 
     private sessions: ScreencastSession[] = [];
@@ -40,8 +46,8 @@ export class ScreencastServer {
         }
     }
 
-    public async startTransmit(page: Page, cdp?: CDPSession) {
-        const session = new ScreencastSession(page, cdp);
+    public async startTransmit(page: Page, sessId?: string) {
+        const session = new ScreencastSession(page, sessId);
         this.sessions.push(session);
 
         this.wss.clients.forEach(ws => ws.send(JSON.stringify({
@@ -56,7 +62,7 @@ export class ScreencastServer {
         });
     }
 
-    public async stopTransmit(page: Page) {
+    public async stopTransmit(page: Page, _sessId?: string) {
         const session = this.sessions.find((sess) => sess.page === page);
         if (!session) return;
 

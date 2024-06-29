@@ -21,10 +21,9 @@ export class ScreencastSession {
     private client?: CDPSession;
     private listener?: (event: Protocol.Page.ScreencastFrameEvent) => void;
 
-    constructor(page: Page, client?: CDPSession) {
-        this.sessId = uuidv4();
+    constructor(page: Page, sessId?: string) {
         this.page = page;
-        this.client = client;
+        this.sessId = sessId ?? uuidv4();
     }
 
     public async handleEventMessage(message: EventMessage) {
@@ -50,6 +49,11 @@ export class ScreencastSession {
                     await this.page.keyboard.sendCharacter(e.key);
                 }
             }
+        } else if (message.type == "screencast.event.wheel") {
+            const e = message.data;
+            await this.page.evaluate((deltaX, deltaY) => {
+                window.scrollTo(window.scrollX + deltaX, window.scrollY + deltaY);
+            }, e.deltaX, e.deltaY);
         }
     }
 

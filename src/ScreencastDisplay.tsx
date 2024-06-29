@@ -131,13 +131,38 @@ export function ScreencastDisplay(props: {
         onEventMessage(keyboardEvent);
     };
 
+    const handleScrollEvent = (event: WheelEvent) => {
+        console.log(event);
+
+        if (!onEventMessage || !isMouseInsiderRef.current) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const wheelEvent: EventMessage = {
+            type: "screencast.event.wheel",
+            sessId: frameMessage.sessId,
+            data: {
+                deltaX: event.deltaX,
+                deltaY: event.deltaY,
+            }
+        };
+
+        onEventMessage(wheelEvent);
+    };
+
     useEffect(() => {
         const keyListener = (e: KeyboardEvent) => handleKeyboardEvent(e);
         document.addEventListener('keyup', keyListener);
         document.addEventListener('keydown', keyListener);
+
+        const scrollListener = throttle(handleScrollEvent, 100);
+        window.addEventListener('wheel', scrollListener);
+
         return () => {
             document.removeEventListener('keyup', keyListener);
             document.removeEventListener('keydown', keyListener);
+            window.removeEventListener('wheel', scrollListener);
         }
     }, []);
 
