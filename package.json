@@ -1,9 +1,9 @@
 {
   "name": "react-puppeteer-screencast",
-  "description": "React puppeteer page screencast.",
-  "main": "./src/index.js",
+  "description": "`react-puppeteer-screencast` is an npm package that allows you to stream the current state of a Puppeteer-controlled webpage directly into a browser using a canvas. The library also supports user input events for mouse and keyboard interactions.",
+  "main": "index.js",
   "private": false,
-  "version": "0.1.4",
+  "version": "0.1.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -34,8 +34,6 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.1"
   },
-  "description": "`react-puppeteer-screencast` is an npm package that allows you to stream the current state of a Puppeteer-controlled webpage directly into a browser using a canvas. The library also supports user input events for mouse and keyboard interactions.",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sintanial/react-puppeteer-screencast.git"
