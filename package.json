@@ -1,5 +1,7 @@
 {
   "name": "react-puppeteer-screencast",
+  "description": "React puppeteer page screencast.",
+  "main": "./src/index.js",
   "private": false,
   "version": "0.1.4",
   "type": "module",
